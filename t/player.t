@@ -9,9 +9,9 @@ plan 1;
 subtest {
     plan 2;
 
-    dies_ok { Player.new() },
+    dies-ok { Player.new() },
         'Creating new player with no params throws exception';
 
-    lives_ok { Player.new(name => 'Bob') },
+    lives-ok { Player.new(name => 'Bob') },
         'Creating new player with name works';
 }
