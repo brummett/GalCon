@@ -104,4 +104,9 @@ class Map {
             @.fleets.splice($idx, 0, $new_fleet);
         }
     }
+
+    method fleets_landing_this_turn() returns Array of Fleet {
+        my $idx = @.fleets.first-index({ $^a.distance > 0 }) || @.fleets.elems;
+        return @.fleets.splice(0, $idx);
+    }
 }
