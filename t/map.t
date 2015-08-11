@@ -4,7 +4,7 @@ use Map;
 use Planet;
 
 use Test;
-plan 5;
+plan 6;
 
 subtest {
     plan 5;
@@ -151,3 +151,21 @@ subtest {
     is @landing_fleets.elems, 0, 'no fleets landing with all positive distances';
     is $map.fleets.elems, 3, '3 fleets still on the map';
 }, 'fleets_landing_this_turn';
+
+subtest {
+    plan 2;
+    my $map = Map.new(locations => ());
+
+    my @fleets = (2, 3, 4).map: { Fleet.new(distance => $_, troops => 1, destination => 'Foo') };
+    $map.fleets.push(@fleets);
+
+    $map.move_fleets();
+    is (@fleets.map: { .distance }),
+        (1, 2, 3),
+        'fleets moved';
+
+    $map.move_fleets();
+    is (@fleets.map: { .distance }),
+        (0, 1, 2),
+        'moved again';
+}, 'move_fleets()';
