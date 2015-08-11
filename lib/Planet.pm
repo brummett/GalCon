@@ -66,6 +66,10 @@ class Planet {
         return True;
     }
 
+    method produce() returns Int {
+        self.troops += self.production;
+    }
+
     method Str {
         my $owner = $.owner ?? $.owner.name !! '(no one)';
         return "$.name owned by $owner";

@@ -5,7 +5,7 @@ use Player;
 
 use Test;
 
-plan 4;
+plan 5;
 
 subtest {
     plan 7;
@@ -79,3 +79,14 @@ subtest {
     is $planet.troops, 5, 'subtracted troops';
     is $planet.owner, $other_owner, 'planet owned by new owner';
 }, 'land_fleet';
+
+subtest {
+    plan 4;
+
+    my $planet = Planet.new(troops => 0, production => 5);
+    is $planet.produce, 5, 'produce';
+    is $planet.troops, 5, 'has 5 troops';
+
+    is $planet.produce, 10, 'produce again';
+    is $planet.troops, 10, 'has 10 troops';
+}, 'production';
