@@ -129,12 +129,15 @@ subtest {
 }, 'new_fleet';
 
 subtest {
-    plan 4;
+    plan 7;
     my $map = Map.new(locations => ());
+
+    my @landing_fleets = $map.fleets_landing_this_turn;
+    is @landing_fleets.elems, 0, 'no fleets landing with empty list';
 
     my @fleets = (0, 0, 0).map: { Fleet.new(distance => $_, troops => 1, destination => 'foo') };
     $map.fleets.push(@fleets);
-    my @landing_fleets = $map.fleets_landing_this_turn();
+    @landing_fleets = $map.fleets_landing_this_turn();
     is @landing_fleets.elems, @fleets.elems, 'All fleets are landing';
     is $map.fleets.elems, 0, 'No fleets left on the map';
 
@@ -143,4 +146,8 @@ subtest {
     @landing_fleets = $map.fleets_landing_this_turn();
     is @landing_fleets.elems, 2, 'Two fleets landing this turn';
     is $map.fleets.elems, 3, '3 fleets left on the map';
+
+    @landing_fleets = $map.fleets_landing_this_turn();
+    is @landing_fleets.elems, 0, 'no fleets landing with all positive distances';
+    is $map.fleets.elems, 3, '3 fleets still on the map';
 }, 'fleets_landing_this_turn';

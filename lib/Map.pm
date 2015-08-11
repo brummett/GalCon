@@ -106,7 +106,7 @@ class Map {
     }
 
     method fleets_landing_this_turn() returns Array of Fleet {
-        my $idx = @.fleets.first-index({ $^a.distance > 0 }) || @.fleets.elems;
+        my $idx = @.fleets.first-index({ $^a.distance > 0 });
         return @.fleets.splice(0, $idx);
     }
 }
