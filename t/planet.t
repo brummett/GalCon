@@ -81,9 +81,14 @@ subtest {
 }, 'land_fleet';
 
 subtest {
-    plan 4;
+    plan 6;
 
-    my $planet = Planet.new(troops => 0, production => 5);
+    my $unowned = Planet.new(troops => 5, production => 5);
+    ok ! $unowned.produce, 'produce on an unowned planet returns false';
+    is $unowned.troops, 5, 'did not add troops';
+
+    my $owner = Player.new(name => 'Bob');
+    my $planet = Planet.new(troops => 0, production => 5, owner => $owner);
     is $planet.produce, 5, 'produce';
     is $planet.troops, 5, 'has 5 troops';
 

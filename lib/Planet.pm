@@ -66,8 +66,10 @@ class Planet {
         return True;
     }
 
-    method produce() returns Int {
-        self.troops += self.production;
+    method produce() {
+        if self.owner {
+            self.troops += self.production;
+        }
     }
 
     method Str {
