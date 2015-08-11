@@ -1,6 +1,7 @@
 use v6;
 
 use Owner;
+use Fleet;
 
 my Int $max_initial_troops = 10;
 my Int $max_production = 10;
@@ -49,6 +50,20 @@ class Planet {
     method withdraw_troops(Int $count! where * > 0) returns Int {
         self.troops -= $count;
         return $count;
+    }
+
+    method land_fleet(Fleet $landing! where *.destination eq self.name) returns Bool {
+        if ($landing.owner === self.owner) {
+            self.troops += $landing.troops;
+
+        } else {
+            my $left = $.troops - $landing.troops;
+            if ($left < 0) {
+                self.owner = $landing.owner;
+            }
+            self.troops = abs($left);
+        }
+        return True;
     }
 
     method Str {
