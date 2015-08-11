@@ -1,5 +1,7 @@
 use v6;
 
+use Owner;
+
 my Int $max_initial_troops = 10;
 my Int $max_production = 10;
 
@@ -34,4 +36,14 @@ class Planet {
     has $.name = @planet_names.shift;
     has Int $.troops is rw where * >= 0 = (1 .. $max_initial_troops).pick;
     has Int $.production where * >= 0 = (0 .. $max_production).pick;
+    has Owner $.owner;
+
+    method owner is rw {
+        return Proxy.new:
+            FETCH => sub ($) { return $!owner },
+            STORE => sub ($, Owner:D $new_owner) {
+                $!owner = $new_owner;
+            };
+    }
 }
+
