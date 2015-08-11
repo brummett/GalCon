@@ -45,5 +45,10 @@ class Planet {
                 $!owner = $new_owner;
             };
     }
+
+    method Str {
+        my $owner = $.owner ?? $.owner.name !! '(no one)';
+        return "$.name owned by $owner";
+    }
 }
 
