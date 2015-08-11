@@ -1,10 +1,10 @@
 use v6;
 
 use Map;
+use Planet;
 
 use Test;
-
-plan 1;
+plan 2;
 
 subtest {
     plan 5;
@@ -30,4 +30,40 @@ subtest {
     for %player_names.keys -> $name {
         is %owned_planet_owners{ $name }, 1, "Player $name has 1 planet";
     }
-}, 'constructor';
+}, 'map constructor';
+
+subtest {
+    plan 8;
+
+    my $origin = Location.new(x => 0, y => 0, planet => Planet.new);
+    is $origin.distance_to($origin),
+        0,
+        'origin to self is 0';
+
+    my $location_1 = Location.new(x => 1, y => 0, planet => Planet.new);
+    is $location_1.distance_to($location_1),
+        0,
+        'location_1 to self is 0';
+    is $origin.distance_to($location_1),
+        1,
+        'origin to (1, 0)';
+    is $location_1.distance_to($origin),
+        1,
+        '(1, 0) to origin';
+
+    my $location_1_1 = Location.new(x => 1, y => 1, planet => Planet.new);
+    is $location_1_1.distance_to($location_1_1),
+        0,
+        '(1,1) to self is 0';
+    is $origin.distance_to($location_1_1),
+        2,
+        'origin to (1,1) is 2';
+    is $location_1_1.distance_to($origin),
+        2,
+        '(1,1) to origin is 2';
+    is $location_1.distance_to($location_1_1),
+        1,
+        '(1,0) to (1,1) is 1';
+
+}, 'location distance';
+

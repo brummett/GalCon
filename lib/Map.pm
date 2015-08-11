@@ -16,6 +16,12 @@ class Location {
         $owner //= 'no one';
         return "Location: ($.x, $.y), $.planet ";
     }
+
+    method distance_to(Location $other) returns Int {
+        my $a = abs(self.x - $other.x);
+        my $b = abs(self.y - $other.y);
+        return ceiling(sqrt($a ** 2 + $b ** 2));
+    }
 }
 
 class Map {
