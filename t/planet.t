@@ -49,29 +49,32 @@ subtest {
 }, 'troops';
 
 subtest {
-    plan 12;
+    plan 13;
 
     my $owner = Owner.new(name => 'Bob');
     my $planet = Planet.new(name => 'Foo', troops => 5, owner => $owner);
-    my $wrong_dest_fleet = Fleet.new(owner => $owner, destination => 'Bar', troops => 3);
+    my $wrong_dest_fleet = Fleet.new(owner => $owner, destination => 'Bar', troops => 3, distance => 0);
     dies-ok { $planet.land_fleet($wrong_dest_fleet) }, 'Cannot land a fleet with the wrong destination';
 
-    my $friendly = Fleet.new(owner => $owner, destination => 'Foo', troops => 3);
+    my $wrong_distance_fleet = Fleet.new(owner => $owner, destination => 'Foo', troops => 3, distance => 1);
+    dies-ok { $planet.land_fleet($wrong_distance_fleet) }, 'Cannot land a fleet with positive distance';
+
+    my $friendly = Fleet.new(owner => $owner, destination => 'Foo', troops => 3, distance => 0);
     ok $planet.land_fleet($friendly), 'land friendly fleet';
     is $planet.troops, 8, 'added troops';
 
     my $other_owner = Owner.new(name => 'Fred');
-    my $foe_1 = Fleet.new(owner => $other_owner, destination => 'Foo', troops => 3);
+    my $foe_1 = Fleet.new(owner => $other_owner, destination => 'Foo', troops => 3, distance => 0);
     ok $planet.land_fleet($foe_1), 'land foe fleet';
     is $planet.troops, 5, 'subtracted troops';
     is $planet.owner, $owner, 'planet owned by original owner';
 
-    my $foe_2 = Fleet.new(owner => $other_owner, destination => 'Foo', troops => 5);
+    my $foe_2 = Fleet.new(owner => $other_owner, destination => 'Foo', troops => 5, distance => 0);
     ok $planet.land_fleet($foe_2), 'land second foe fleet';
     is $planet.troops, 0, 'subtracted troops';
     is $planet.owner, $owner, 'planet still owned by original owner';
 
-    my $foe_3 = Fleet.new(owner => $other_owner, destination => 'Foo', troops => 5);
+    my $foe_3 = Fleet.new(owner => $other_owner, destination => 'Foo', troops => 5, distance => 0);
     ok $planet.land_fleet($foe_3), 'land third foe fleet';
     is $planet.troops, 5, 'subtracted troops';
     is $planet.owner, $other_owner, 'planet owned by new owner';

@@ -52,7 +52,7 @@ class Planet {
         return $count;
     }
 
-    method land_fleet(Fleet $landing! where *.destination eq self.name) returns Bool {
+    method land_fleet(Fleet $landing! where { $_.destination eq self.name and $_.distance <= 0 }) returns Bool {
         if ($landing.owner === self.owner) {
             self.troops += $landing.troops;
 
