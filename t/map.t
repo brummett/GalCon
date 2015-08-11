@@ -4,7 +4,7 @@ use Map;
 use Planet;
 
 use Test;
-plan 6;
+plan 7;
 
 subtest {
     plan 5;
@@ -169,3 +169,26 @@ subtest {
         (0, 1, 2),
         'moved again';
 }, 'move_fleets()';
+
+subtest {
+    plan 2;
+
+    my $owner = Player.new(name => 'Bob');
+    my @locations = do for (1 .. 2 ) -> $troops {
+            my $planet = Planet.new(name => 'foo', troops => $troops, production => 5, owner => $owner);
+            Location.new(x => 1, y => 1, planet => $planet);
+        };
+
+    my $map = Map.new(locations => @locations);
+
+    $map.work_planets();
+    is ($map.locations.map: { .planet.troops }),
+        (6, 7),
+        'work_planets()';
+
+    $map.work_planets();
+    is ($map.locations.map: { .planet.troops }),
+        (11, 12),
+        'work_planets() again';
+
+}, 'work_planets()';

@@ -109,6 +109,10 @@ class Map {
         .move for self.fleets;
     }
 
+    method work_planets() {
+        .planet.produce for self.locations;
+    }
+
     method fleets_landing_this_turn() returns Array of Fleet {
         my $idx = @.fleets.first-index({ $^a.distance > 0 });
         return @.fleets.splice(0, $idx);
