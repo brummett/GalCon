@@ -4,7 +4,7 @@ use Map;
 use Planet;
 
 use Test;
-plan 2;
+plan 3;
 
 subtest {
     plan 5;
@@ -31,6 +31,24 @@ subtest {
         is %owned_planet_owners{ $name }, 1, "Player $name has 1 planet";
     }
 }, 'map constructor';
+
+subtest {
+    plan 6;
+
+    my $num_planets = 5;
+    my %player_names = Bob => 'Bob', Fred => 'Fred';
+
+    my Planet @planets = (1 .. $num_planets).map: { Planet.new() };
+    my Player @players = %player_names.keys.map: { Player.new(name => $_) };
+    my $map = Map.new(planets => @planets, players => @players);
+
+    for @planets -> $planet {
+        my $location = $map.location_for_planet_name($planet.name);
+        ok $location, "got location for { $planet.name }";
+    }
+
+    ok ! $map.location_for_planet_name('bogus'), 'bogus planet name has no location';
+}, 'location_for_planet_name';
 
 subtest {
     plan 8;

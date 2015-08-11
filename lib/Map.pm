@@ -26,6 +26,7 @@ class Location {
 
 class Map {
     has Location @.locations;
+    has Location %!planet_name_to_location;
 
     multi method new(Planet :@planets!, Owner :@players!) {
         my %picked_locations;
@@ -65,5 +66,16 @@ class Map {
         for @players Z self.locations.pick($player_count) -> ($player, $location) {
             $location.planet.owner = $player;
         }
+    }
+
+    method location_for_planet_name(Str $name!) returns Location {
+        unless (%!planet_name_to_location) {
+            for @.locations -> $location {
+                if ($location.planet.name eq $name) {
+                    return $location;
+                }
+            }
+        }
+        return %!planet_name_to_location{$name} || Location;
     }
 }
