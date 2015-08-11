@@ -46,6 +46,11 @@ class Planet {
             };
     }
 
+    method withdraw_troops(Int $count! where * > 0) returns Int {
+        self.troops -= $count;
+        return $count;
+    }
+
     method Str {
         my $owner = $.owner ?? $.owner.name !! '(no one)';
         return "$.name owned by $owner";
