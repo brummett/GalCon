@@ -2,6 +2,7 @@ use v6;
 
 use Planet;
 use Player;
+use Fleet;
 
 my Int $max_x = 10;
 my Int $max_y = 10;
@@ -27,6 +28,7 @@ class Location {
 class Map {
     has Location @.locations;
     has Location %!planet_name_to_location;
+    has Fleet @.fleets;
 
     multi method new(Planet :@planets!, Owner :@players!) {
         my %picked_locations;
@@ -77,5 +79,29 @@ class Map {
             }
         }
         return %!planet_name_to_location{$name} || Location;
+    }
+
+    method new_fleet(Str :$source!, Str :$destination!, Int :$count!) {
+        my Location:D $source_location = self.location_for_planet_name($source);
+        my Location:D $dest_location = self.location_for_planet_name($destination);
+
+        my $fleet = Fleet.new(troops => $source_location.planet.withdraw_troops($count),
+                              destination => $dest_location.planet.name,
+                              distance => $source_location.distance_to($dest_location));
+        self.insert_fleet($fleet);
+        return $fleet;
+    }
+
+    method insert_fleet(Fleet $new_fleet!) {
+        if (! @.fleets.elems) {
+            @.fleets.push($new_fleet);
+
+        } else {
+            my $idx;
+            loop ($idx = 0; $idx < @.fleets.elems; $idx++) {
+                last if $new_fleet.distance < @.fleets[$idx].distance;
+            }
+            @.fleets.splice($idx, 0, $new_fleet);
+        }
     }
 }

@@ -4,7 +4,7 @@ use Map;
 use Planet;
 
 use Test;
-plan 3;
+plan 4;
 
 subtest {
     plan 5;
@@ -85,3 +85,45 @@ subtest {
 
 }, 'location distance';
 
+subtest {
+    plan 15;
+
+    my %player_names = Bob => 'Bob', Fred => 'Fred';
+    my @location_coords = ( ('One', 0, 0), ('Two', 1, 0), ('Three', 2, 0) );
+
+    my %planets;
+    my Location @locations = do for @location_coords -> $planet_name, $x, $y {
+            my $planet = Planet.new(name => $planet_name, troops => 5);
+            %planets{$planet_name} = $planet;
+            Location.new(x => $x, y => $y, planet => $planet);
+        };
+
+    my $map = Map.new(locations => @locations);
+
+    my $fleet_1 = $map.new_fleet(source => 'One',
+                                 destination => 'Two',
+                                 count => 2);
+    ok $fleet_1, 'Create fleet';
+    is $fleet_1.troops, 2, 'Fleet troops';
+    is $fleet_1.distance, 1, 'distance is 1';
+    is %planets{'One'}.troops, 3, 'Source planet deducted troops';
+    is %planets{'Two'}.troops, 5, 'Destination planet did not deduct troops';
+    is $map.fleets.elems, 1, 'map has 1 fleet';
+
+    my $fleet_2 = $map.new_fleet(source => 'Two',
+                                 destination => 'Two',
+                                 count => 2);
+    ok $fleet_2, 'create fleet 2';
+    is $fleet_2.distance, 0, 'distance is 0';
+    is $map.fleets[0], $fleet_2, 'First fleet is fleet 2';
+    is $map.fleets[1], $fleet_1, 'Second fleet fleet 1';
+
+    my $fleet_3 = $map.new_fleet(source => 'Three',
+                                 destination => 'One',
+                                 count => 2);
+    ok $fleet_3, 'create fleet 3';
+    is $fleet_3.distance, 2, 'distance is 2';
+    is $map.fleets[0], $fleet_2, 'First fleet is fleet 2';
+    is $map.fleets[1], $fleet_1, 'Second fleet is fleet 1';
+    is $map.fleets[2], $fleet_3, 'Third fleet is fleet 3';
+}, 'new_fleet';
