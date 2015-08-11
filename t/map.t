@@ -4,7 +4,7 @@ use Map;
 use Planet;
 
 use Test;
-plan 7;
+plan 8;
 
 subtest {
     plan 5;
@@ -192,3 +192,33 @@ subtest {
         'work_planets() again';
 
 }, 'work_planets()';
+
+subtest {
+    plan 5;
+
+    my $bob = Player.new(name => 'Bob');
+    my $bob_planet = Planet.new(name => 'bob', troops => 1, owner => $bob);
+
+    my $fred = Player.new(name => 'Fred');
+    my $fred_planet = Planet.new(name => 'fred', troops => 2, owner => $fred);
+
+    my @locations = map {
+                        Location.new(x => 0, y => 0, planet => $_);
+                    }, ($bob_planet, $fred_planet);
+    my $map = Map.new(locations => @locations);
+
+    my @fleets = do for (('bob', 0, 1), ('fred', 0, 3), ('foo', 1, 3)) -> ($dest, $dist, $troops) {
+            Fleet.new(destination => $dest,
+                      owner => $bob,
+                      distance => $dist,
+                      troops => $troops);
+        };
+    $map.fleets.push(@fleets);
+
+    $map.do_landings();
+    is $bob_planet.owner, $bob, 'bob is still owned by Bob';
+    is $bob_planet.troops, 2, 'bob has 2 troops';
+    is $fred_planet.owner, $bob, 'fred is now owned by Bob';
+    is $fred_planet.troops, 1, 'fred has 1 troop';
+    is $map.fleets.elems, 1, 'One fleet left after landings';
+}, 'do_landings()';
