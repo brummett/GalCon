@@ -1,0 +1,14 @@
+<DOCTYPE html>
+<html>
+<head>
+    <title>Starting Galcon</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <meta HTTP-EQUIV="refresh" CONTENT="2">
+</head>
+<body>
+% my ($h) = @_;
+    <h2>Starting a game of GalCon</h2>
+    There are currently <%= $h<num_players> %> players.  Waiting on <%= $h<waiting_on_players> %> more.
+</body>
+</html>
