@@ -1,0 +1,20 @@
+<DOCTYPE html>
+<html>
+<head>
+    <title>Starting Galcon</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+</head>
+<body>
+% my ($h) = @_;
+    <h2>Starting a game of GalCon</h2>
+% if $h<dup_name> {
+    <h3>There is already a player named <%= $h<dup_name> %></h3>
+% }
+    <form method="POST" action="/add_player/<%= $h<player_number> %>">
+        Player name: <input type="text" name="player_name">
+        <br>
+        <input type="submit">
+    </form>
+</body>
+</html>
