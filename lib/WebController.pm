@@ -61,7 +61,6 @@ class WebController is Bailador::App {
         return $x;
     }
 
-#    method request { self.context.request }
     method status(Int $code) { self.response.code = $code }
     method header(Str $name, Cool $value) {
         self.response.headers{$name} = ~$value;

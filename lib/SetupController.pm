@@ -64,9 +64,4 @@ class SetupController is WebController {
 }
 
 
-#60's Beetle https://www.youtube.com/watch?v=tPDLX0koXFs
-#Whole engines and transmissions https://www.youtube.com/watch?v=rabJ5gDRCoE
-#Concrete filled steel drum https://www.youtube.com/watch?v=C12pCVQFxIo
-#Rebar scrap https://www.youtube.com/watch?v=Gh9Ossuae_Y
-#Whole car https://www.youtube.com/watch?v=YZDngpTmpzQ
 
