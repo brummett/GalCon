@@ -1,0 +1,30 @@
+<DOCTYPE html>
+<html>
+<head>
+    <title>Starting Galcon</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+</head>
+<body>
+% my ($h) = @_;
+    <h2>Starting a game of GalCon</h2>
+    <form method="POST" action="/setup_game">
+        How many players:
+            <select name="num_players">
+                <option selected value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
+        <br>
+        How many planets:
+            <select name="num_planets">
+%               for (1 .. 39) -> $num {
+                <option value="<%= $num %>"><%= $num %></option>
+%               }
+                <option selected value="40">40</option>
+            </select>
+        <br>
+        <input type="submit" value="Create game">
+    </form>
+</body>
+</html>
