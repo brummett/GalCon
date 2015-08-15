@@ -69,6 +69,11 @@ class WebController is Bailador::App {
         self.response.headers<Context-Type> = $type;
     }
 
+    method redirect(Str $next) {
+        self.status(303);
+        self.header('Location', $next);
+    }
+
     method dispatch($env) {
         self.context.env = $env;
         my ($r, $match) = self.find_route($env);
