@@ -90,22 +90,17 @@ class WebController is Bailador::App {
     }
 
     method run($port = 3000) {
-say "running controller on port $port";
         try {
             given HTTP::Easy::PSGI.new(:host<0.0.0.0>, :$port) {
-say "new server $_";
                 .app(sub ($env) { self.dispatch($env).psgi });
                 say "Starting web server at: http://0.0.0.0:$port";
                 .run;
             }
             CATCH {
-say "got exception";
                 when WebController::ReturnException {
-say "was a ReturnException";
                     return $_.values;
                 }
                 default {
-say "was someting else";
                     $_.rethrow;
                 }
             }
