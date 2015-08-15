@@ -3,7 +3,7 @@ use v6;
 use WebController;
 use Player;
 
-class SetupController is WebController {
+class GameController is WebController {
     has Int $.num_players = 2;
     has Int %!player_names;  # values are which player number that name is
     has Int $!current_num_players = 0;
@@ -62,6 +62,4 @@ class SetupController is WebController {
         self.return(@players);
     }
 }
-
-
 

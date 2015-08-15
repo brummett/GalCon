@@ -1,24 +1,8 @@
 use v6;
 
-use Map;
-use SetupController;
 use GameController;
 
-sub MAIN(Int :$num_planets!, Int :$num_players!) {
-    my $setup = SetupController.new(num_players => $num_players);
-    my Player @players = $setup.run();
-
-    my Map $map = generate_map(players => @players, num_planets => $num_planets);
-
-    my WebController $game = GameController.new(players => @players, map => $map);
+sub MAIN() {
+    my $game = GameController.new();
     $game.run();
-}
-
-sub generate_map(Player :@players!, Int :$num_planets!) returns Map {
-    if ($num_planets < @players.elems) {
-        $num_planets = @players.elems;
-    }
-
-    my @planets = (1 .. $num_planets).map: { Planet.new() };
-    return Map.new(planets => @planets, players => @players);
 }
