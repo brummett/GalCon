@@ -13,7 +13,8 @@ subtest {
     my $fleet = Fleet.new(owner => $owner,
                           troops => 5,
                           destination => 'somewhere',
-                          distance => 5);
+                          distance => 5,
+                          kill_pct => 5);
     ok $fleet, 'Create fleet';
 }, 'constructor';
 
@@ -24,7 +25,8 @@ subtest {
     my $fleet = Fleet.new(owner => $owner,
                           troops => 5,
                           destination => 'somewhere',
-                          distance => 3);
+                          distance => 3,
+                          kill_pct => 5);
     is $fleet.move, 2, 'move';
     is $fleet.distance, 2, 'moved to 2';
 
