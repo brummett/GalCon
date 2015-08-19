@@ -1,0 +1,15 @@
+<DOCTYPE html>
+<html>
+<head>
+    <title>Galcon</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+</head>
+<body>
+% my ($h) = @_;
+    <h2>The game has alreadt started</h2>
+% loop(my $i = 0; $i < $h<num_players>; $i++) {
+    If you are player <%= $i %>, <a href="/play/<%= $i %>">click here</a>
+% }
+</body>
+</html>

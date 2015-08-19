@@ -18,6 +18,7 @@ class GameController is WebController {
         $self.post: '/setup_game' => sub { $self.receive_setup_game() };
         $self.post: '/add_player/:player_num' => sub ($n) { $self.add_player($n) };
         $self.get: '/waiting/:player_num' => sub ($n) { $self.waiting($n) };
+        $self.get: '/play/:player_num' => sub ($n) { $self.load_game_board($n) };
         return $self;
     }
 
@@ -28,6 +29,11 @@ class GameController is WebController {
             when running { self.start_game }
             default { die "unknown game state $!game_state" }
         }
+    }
+
+    method start_game() {
+        my @tmpl_args = { num_players => $!num_players };
+        self.render('game_already_started.tt', @tmpl_args);
     }
 
     method render_setup_game() {
@@ -82,13 +88,23 @@ class GameController is WebController {
         return $!num_players - $!current_num_players;
     }
 
-    method start_game() {
-        say "The game is ready to start...";
-        my Player @players;
-        for %!player_names.kv -> $name, $player_num {
-            @players[$player_num] = Player.new(name => $name);
+    method name_for_player_number($player_num) {
+        for %!player_names.kv -> $name, $num {
+            return $name if $num == $player_num;
         }
-        self.return(@players);
+        die "No name for player number $player_num";
+    }
+
+    method load_game_board($player_num) {
+        unless ($!game_state == running) {
+            return self.redirect('/');
+        }
+
+        my @tmpl_args = {
+            player_num => $player_num,
+            player_name => self.name_for_player_number($player_num),
+        };
+        self.template('load_game_board.tt', @tmpl_args);
     }
 }
 
