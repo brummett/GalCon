@@ -87,7 +87,8 @@ class Map {
 
         my $fleet = Fleet.new(troops => $source_location.planet.withdraw_troops($count),
                               destination => $dest_location.planet.name,
-                              distance => $source_location.distance_to($dest_location));
+                              distance => $source_location.distance_to($dest_location),
+                              kill_pct => $source_location.planet.kill_pct);
         self.insert_fleet($fleet);
         return $fleet;
     }

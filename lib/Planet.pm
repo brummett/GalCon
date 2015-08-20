@@ -5,6 +5,7 @@ use Fleet;
 
 my Int $max_initial_troops = 10;
 my Int $max_production = 10;
+my Int $max_kill_pct = 40;
 
 my Str @planet_names =
   < Mercury Venus Earth Mars Jupiter Saturn Uranus Neptune
@@ -37,6 +38,7 @@ class Planet {
     has $.name = @planet_names.shift;
     has Int $.troops is rw where * >= 0 = (1 .. $max_initial_troops).pick;
     has Int $.production where * >= 0 = (0 .. $max_production).pick;
+    has Int $.kill_pct where { $_ >= 1 } = (1 .. $max_kill_pct).pick;
     has Owner $.owner;
 
     method owner is rw {
@@ -54,14 +56,23 @@ class Planet {
 
     method land_fleet(Fleet $landing! where { $_.destination eq self.name and $_.distance <= 0 }) returns Bool {
         if ($landing.owner === self.owner) {
-            self.troops += $landing.troops;
+            $.troops += $landing.troops;
 
         } else {
-            my $left = $.troops - $landing.troops;
-            if ($left < 0) {
-                self.owner = $landing.owner;
+            my Int $troops = $.troops;
+            my Int $landing_troops = $landing.troops;
+            while ($troops > 0 and $landing_troops > 0) {
+                my @hits = ( 0 .. 99 ).pick($troops).grep: { $_ < $.kill_pct };
+                my @landing_hits = ( 0 .. 99 ).pick($landing_troops).grep: { $_ < $landing.kill_pct };
+                $troops -= @landing_hits.elems;
+                $landing_troops -= @hits.elems;
             }
-            self.troops = abs($left);
+            if ($troops <= 0 and $landing_troops > 0) {
+                $.owner = $landing.owner;
+                $.troops = $landing_troops;
+            } else {
+                $.troops = $troops > 0 ?? $troops !! 0;
+            }
         }
         return True;
     }

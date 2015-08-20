@@ -5,16 +5,17 @@ use Player;
 
 use Test;
 
-plan 5;
+plan 6;
 
 subtest {
-    plan 7;
+    plan 8;
 
     my $planet = Planet.new();
     ok $planet, 'Create a planet';
     ok $planet.name, 'Planet has a name';
     ok $planet.troops, 'Planet has some troops';
     ok $planet.production, 'Planet has production';
+    ok $planet.kill_pct, 'Planet has kill_pct';
     ok !($planet.owner), 'Planet has no owner';
 
     my $other_planet = Planet.new();
@@ -23,11 +24,12 @@ subtest {
 }, 'Constructor';
 
 subtest {
-    plan 5;
+    plan 6;
 
     my $planet = Planet.new();
     dies-ok { $planet.name = 'Bob' }, 'Cannot change name';
     dies-ok { $planet.production = 100 }, 'Cannot change production';
+    dies-ok { $planet.kill_pct = 100 }, 'Cannot change kill_pct';
     lives-ok { $planet.troops = 100 }, 'troops is changable';
 
     my $player = Player.new(name => 'Bob');
@@ -52,7 +54,7 @@ subtest {
     plan 13;
 
     my $owner = Owner.new(name => 'Bob');
-    my $planet = Planet.new(name => 'Foo', troops => 5, owner => $owner);
+    my $planet = Planet.new(name => 'Foo', troops => 5, owner => $owner, kill_pct => 100);
     my $wrong_dest_fleet = Fleet.new(owner => $owner, destination => 'Bar', troops => 3, distance => 0);
     dies-ok { $planet.land_fleet($wrong_dest_fleet) }, 'Cannot land a fleet with the wrong destination';
 
@@ -64,21 +66,36 @@ subtest {
     is $planet.troops, 8, 'added troops';
 
     my $other_owner = Owner.new(name => 'Fred');
-    my $foe_1 = Fleet.new(owner => $other_owner, destination => 'Foo', troops => 3, distance => 0);
+    my $foe_1 = Fleet.new(owner => $other_owner, destination => 'Foo', troops => 3, distance => 0, kill_pct => 100);
     ok $planet.land_fleet($foe_1), 'land foe fleet';
     is $planet.troops, 5, 'subtracted troops';
     is $planet.owner, $owner, 'planet owned by original owner';
 
-    my $foe_2 = Fleet.new(owner => $other_owner, destination => 'Foo', troops => 5, distance => 0);
+    my $foe_2 = Fleet.new(owner => $other_owner, destination => 'Foo', troops => 5, distance => 0, kill_pct => 100);
     ok $planet.land_fleet($foe_2), 'land second foe fleet';
     is $planet.troops, 0, 'subtracted troops';
     is $planet.owner, $owner, 'planet still owned by original owner';
 
-    my $foe_3 = Fleet.new(owner => $other_owner, destination => 'Foo', troops => 5, distance => 0);
+    my $foe_3 = Fleet.new(owner => $other_owner, destination => 'Foo', troops => 5, distance => 0, kill_pct => 100);
     ok $planet.land_fleet($foe_3), 'land third foe fleet';
     is $planet.troops, 5, 'subtracted troops';
     is $planet.owner, $other_owner, 'planet owned by new owner';
 }, 'land_fleet';
+
+subtest {
+    plan 3;
+
+    my $owner = Owner.new(name => 'Bob');
+    my $planet = Planet.new(name => 'Foo', troops => 5, owner => $owner, kill_pct => 100);
+
+    my $other_owner = Owner.new(name => 'Fred');
+    my $foe = Fleet.new(owner => $other_owner, destination => 'Foo', troops => 99, distance => 0, kill_pct => 0);
+
+    ok $planet.land_fleet($foe), 'land fleet';
+    is $planet.owner, $owner, 'planet still owned by original owner';
+    is $planet.troops, 5, 'lost no troops';
+
+}, 'land_fleet different kill pct';
 
 subtest {
     plan 6;

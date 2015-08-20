@@ -197,10 +197,10 @@ subtest {
     plan 5;
 
     my $bob = Player.new(name => 'Bob');
-    my $bob_planet = Planet.new(name => 'bob', troops => 1, owner => $bob);
+    my $bob_planet = Planet.new(name => 'bob', troops => 1, owner => $bob, kill_pct => 100);
 
     my $fred = Player.new(name => 'Fred');
-    my $fred_planet = Planet.new(name => 'fred', troops => 2, owner => $fred);
+    my $fred_planet = Planet.new(name => 'fred', troops => 2, owner => $fred, kill_pct => 100);
 
     my @locations = map {
                         Location.new(x => 0, y => 0, planet => $_);
@@ -211,7 +211,8 @@ subtest {
             Fleet.new(destination => $dest,
                       owner => $bob,
                       distance => $dist,
-                      troops => $troops);
+                      troops => $troops,
+                      kill_pct => 100);
         };
     $map.fleets.push(@fleets);
 
