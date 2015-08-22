@@ -4,9 +4,14 @@
     <title>Galcon</title>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
+    <link href="/assets/galcon.css" rel="stylesheet" media="screen">
+    <script src="/assets/angular.min.js"></script>
+    <script src="/assets/galcon.js"></script>
 </head>
 <body>
 % my ($h) = @_;
-    <h2>You are player <%= $h<player_num> %>, <%= $h<player_name> %></h2>
+    <h2><%= $h<player_name> %> Score: <span id="score"></span></h2>
+    <div id="map"></div>
+    <div id="planets"></div>
 </body>
 </html>
