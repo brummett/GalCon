@@ -14,10 +14,13 @@ class GameController is WebController {
 
     method new {
         my $self = callsame;
+        # Game setup
         $self.get: '/' => sub { $self.entry };
         $self.post: '/setup_game' => sub { $self.receive_setup_game() };
         $self.post: '/add_player/:player_num' => sub ($n) { $self.add_player($n) };
         $self.get: '/waiting/:player_num' => sub ($n) { $self.waiting($n) };
+
+        # Loading the game board
         $self.get: '/play/:player_num' => sub ($n) { $self.load_game_board($n) };
         return $self;
     }
