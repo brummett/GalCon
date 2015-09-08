@@ -32,10 +32,12 @@ class WebController is Bailador::App {
         }).join("'/'");
     }
 
-    sub parse_route(Str $route) {
+    multi sub parse_route(Str $route) {
         my $r = route_to_regex($route);
         return "/ ^ $r \$ /".EVAL;
     }
+    multi sub parse_route(Regex $route) { return $route }
+
 
     method get(Pair $x) {
         my $p = parse_route($x.key) => $x.value;
@@ -81,7 +83,7 @@ class WebController is Bailador::App {
         if $r {
             self.status(200);
             if $match {
-                self.response.content = $r.value.(|$match.list);
+                self.response.content = $r.value.(| $match.list.map(*.Str));
             } else {
                 self.response.content = $r.value.();
             }
