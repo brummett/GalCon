@@ -11,9 +11,11 @@ class GameController is WebController {
     has Int %!player_names;  # values are which player number that name is
     has Int $!current_num_players = 0;
     has GameState $!game_state = setup;
+    has Str $!asset_base_path = resolve_asset_base_path();
 
     method new {
         my $self = callsame;
+
         # Game setup
         $self.get: '/' => sub { $self.entry };
         $self.post: '/setup_game' => sub { $self.receive_setup_game() };
@@ -22,6 +24,8 @@ class GameController is WebController {
 
         # Loading the game board
         $self.get: '/play/:player_num' => sub ($n) { $self.load_game_board($n) };
+        $self.get: / '/assets/' (\S+)/ => sub ($thing) { $self.get_asset($thing) };
+
         return $self;
     }
 
@@ -108,6 +112,35 @@ class GameController is WebController {
             player_name => self.name_for_player_number($player_num),
         };
         self.template('load_game_board.tt', @tmpl_args);
+    }
+
+    sub resolve_asset_base_path () returns Str {
+        my $file = callframe(0).file;
+        return $file.substr(0, $file.rindex('/')) ~ '/../assets/';
+    }
+
+    my %content-types = js      => 'application/javascript',
+                        css     => 'test/css',
+                        html    => 'text/html',
+                        DEFAULT => 'test/plain',
+            ;
+    method get_asset(Str $thing) {
+        my $ext = $thing.substr(0, $thing.rindex('.'));
+        my $type = %content-types{$ext} || %content-types<DEFAULT>;
+
+        my $path = $*SPEC.catpath(Str, $!asset_base_path, $thing);
+        try {
+            self.header('Content-Type', $type);
+            $path.IO.slurp();
+            CATCH {
+                when /'Failed to open file'/ {
+                    self.status(404);
+                    self.header('Content-Type', 'text/plain');
+                    return "File $path not found";
+                }
+                default { die $_ }
+            }
+        }
     }
 }
 
