@@ -2,12 +2,14 @@ use v6;
 
 use WebController;
 use Player;
+use Map;
 
 enum GameState <setup waitplayers running>;
 
 class GameController is WebController {
     has Int $!num_players;
     has Int $!num_planets;
+    has Map $!game_map;
     has Int %!player_names;  # values are which player number that name is
     has Int $!current_num_players = 0;
     has GameState $!game_state = setup;
@@ -77,6 +79,7 @@ class GameController is WebController {
 
     method waiting($player_num) {
         if self.ready_to_start($player_num) {
+            $!game_map //= create_game_map(:$!num_planets, :%!player_names);
             $!game_state = running;
             self.redirect("/play/$player_num");
         } else {
@@ -85,6 +88,12 @@ class GameController is WebController {
                             };
             self.template('waiting_for_players.tt', @tmpl_args);
         }
+    }
+
+    sub create_game_map(Int :$num_planets, Int :%player_names) {
+        my @planets = Planet.new() for (1 .. $num_planets);
+        my @players = Player.new(name => $_) for %player_names.keys;
+        return Map.new(:@planets, :@players);
     }
 
     method ready_to_start($) returns Bool {
@@ -110,6 +119,8 @@ class GameController is WebController {
         my @tmpl_args = {
             player_num => $player_num,
             player_name => self.name_for_player_number($player_num),
+            max_x => $!game_map.max_x,
+            max_y => $!game_map.max_y,
         };
         self.template('load_game_board.tt', @tmpl_args);
     }

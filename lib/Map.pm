@@ -42,6 +42,9 @@ class Map {
         callsame;
     }
 
+    method max_x { return $max_x }
+    method max_y { return $max_y }
+
     sub create_location_for_planet(Planet $planet) returns Location {
         state Bool %picked_locations;
 
